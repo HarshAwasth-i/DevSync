@@ -12,6 +12,10 @@ import Tasks from "./pages/Tasks";
 import Teams from "./pages/Teams";
 
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import CreateProject from "./pages/CreateProject";
+
+import EditProject from "./pages/EditProject";
 
 function App() {
   return (
@@ -22,13 +26,70 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        <Route
+  path="/projects/create"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<CreateProject />} />
+</Route>
+
+<Route
+  path="/projects/edit/:id"
+  element={
+    <ProtectedRoute>
+      <EditProject />
+    </ProtectedRoute>
+  }
+/>
+
         {/* Protected Layout (authentication will be added later) */}
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/teams" element={<Teams />} />
-        </Route>
+      <Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<Dashboard />} />
+</Route>
+
+<Route
+  path="/projects"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<Projects />} />
+</Route>
+
+<Route
+  path="/tasks"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<Tasks />} />
+</Route>
+
+<Route
+  path="/teams"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<Teams />} />
+</Route>
 
         <Route path="*" element={<NotFound />} />
       </Routes>
