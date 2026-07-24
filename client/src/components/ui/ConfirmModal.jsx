@@ -4,14 +4,13 @@ export default function ConfirmModal({
   message,
   onCancel,
   onConfirm,
+  loading = false,
 }) {
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-
-      <div className="bg-white rounded-2xl p-6 w-[400px] shadow-xl">
-
+      <div className="bg-white rounded-2xl p-6 w-[400px] shadow-xl animate-fade-in">
         <h2 className="text-xl font-bold mb-3">
           {title}
         </h2>
@@ -21,25 +20,31 @@ export default function ConfirmModal({
         </p>
 
         <div className="flex justify-end gap-3">
-
           <button
             onClick={onCancel}
-            className="px-5 py-2 rounded-xl bg-gray-200 hover:bg-gray-300"
+            disabled={loading}
+            className={`px-5 py-2 rounded-xl transition ${
+              loading
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
           >
             Cancel
           </button>
 
           <button
             onClick={onConfirm}
-            className="px-5 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700"
+            disabled={loading}
+            className={`px-5 py-2 rounded-xl text-white transition ${
+              loading
+                ? "bg-red-400 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-700"
+            }`}
           >
-            Delete
+            {loading ? "Deleting..." : "Delete"}
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }

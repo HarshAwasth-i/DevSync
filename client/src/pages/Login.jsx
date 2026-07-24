@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { notify } from "../utils/toast";
 
 import Card from "../components/ui/Card";
 import Input from "../components/ui/Input";
@@ -29,6 +30,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (loading) return;
+
     try {
       setLoading(true);
 
@@ -36,12 +39,12 @@ export default function Login() {
 
       login(res.data.user, res.data.token);
 
-      alert("Login Successful!");
+      notify.success("Login successful! Welcome back 👋");
 
       navigate("/dashboard");
     } catch (err) {
-      alert(
-        err.response?.data?.message || "Login Failed"
+      notify.error(
+        err.response?.data?.message || "Login failed!"
       );
     } finally {
       setLoading(false);
@@ -59,6 +62,7 @@ export default function Login() {
           <Input
             label="Email"
             name="email"
+            type="email"
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter Email"
@@ -73,7 +77,10 @@ export default function Login() {
             placeholder="Enter Password"
           />
 
-          <Button type="submit">
+          <Button
+            type="submit"
+            disabled={loading}
+          >
             {loading ? "Logging in..." : "Login"}
           </Button>
         </form>

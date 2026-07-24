@@ -69,7 +69,7 @@ export default function Tasks() {
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader type="skeleton" rows={8} />;
 
   return (
     <Card>
@@ -102,7 +102,12 @@ export default function Tasks() {
         {filteredTasks.length === 0 ? (
           <tr>
             <td colSpan="6">
-              <EmptyState message="No Tasks Found" />
+              <EmptyState
+  title="No Tasks Yet"
+  message="Create your first task and start tracking your team's progress."
+  buttonText="+ New Task"
+  onButtonClick={() => navigate("/tasks/create")}
+/>
             </td>
           </tr>
         ) : (

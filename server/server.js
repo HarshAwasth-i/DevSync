@@ -9,7 +9,7 @@ import "./config/db.js";
 
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
-
+import teamRoutes from "./routes/teamRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 
 const app = express();
@@ -22,6 +22,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/teams", teamRoutes);
 
 app.get("/", (req, res) => {
   res.send("DevSync Backend Running 🚀");

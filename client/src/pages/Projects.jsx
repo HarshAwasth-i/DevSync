@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
+
 import api from "../services/api";
+import { notify } from "../utils/toast";
 
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -13,6 +15,8 @@ import Loader from "../components/ui/Loader";
 import EmptyState from "../components/ui/EmptyState";
 import ConfirmModal from "../components/ui/ConfirmModal";
 
+import ProjectStats from "../components/projects/ProjectStats";
+
 export default function Projects() {
   const navigate = useNavigate();
 
@@ -23,6 +27,7 @@ export default function Projects() {
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -43,6 +48,7 @@ export default function Projects() {
       setFilteredProjects(res.data);
     } catch (err) {
       console.error(err);
+      notify.error("Failed to load projects.");
     } finally {
       setLoading(false);
     }
@@ -52,6 +58,8 @@ export default function Projects() {
     if (!selectedProject) return;
 
     try {
+      setDeleteLoading(true);
+
       await api.delete(`/projects/${selectedProject}`);
 
       const updatedProjects = projects.filter(
@@ -61,15 +69,23 @@ export default function Projects() {
       setProjects(updatedProjects);
       setFilteredProjects(updatedProjects);
 
+      notify.success("Project deleted successfully!");
+
       setOpenModal(false);
       setSelectedProject(null);
     } catch (err) {
       console.error(err);
-      alert("Failed to delete project");
+
+      notify.error(
+        err.response?.data?.message ||
+          "Failed to delete project."
+      );
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader type="skeleton" rows={6} />;
 
   return (
     <Card>
@@ -82,6 +98,8 @@ export default function Projects() {
           </Button>
         }
       />
+
+      <ProjectStats projects={projects} />
 
       <SearchBar
         value={search}
@@ -101,7 +119,12 @@ export default function Projects() {
         {filteredProjects.length === 0 ? (
           <tr>
             <td colSpan="5">
-              <EmptyState message="No Projects Found" />
+              <EmptyState
+  title="No Projects Yet"
+  message="Create your first project to start collaborating with your team."
+  buttonText="+ New Project"
+  onButtonClick={() => navigate("/projects/create")}
+/>
             </td>
           </tr>
         ) : (
@@ -110,7 +133,9 @@ export default function Projects() {
               key={project.id}
               className="border-b hover:bg-slate-50 transition"
             >
-              <td className="p-4 font-medium">{project.name}</td>
+              <td className="p-4 font-medium">
+                {project.name}
+              </td>
 
               <td className="p-4">
                 <Badge
@@ -119,10 +144,14 @@ export default function Projects() {
                 />
               </td>
 
-              <td className="p-4">{project.createdBy}</td>
+              <td className="p-4">
+                {project.createdBy}
+              </td>
 
               <td className="p-4">
-                {new Date(project.created_at).toLocaleDateString()}
+                {new Date(
+                  project.created_at
+                ).toLocaleDateString()}
               </td>
 
               <td className="p-4">
@@ -153,12 +182,15 @@ export default function Projects() {
       <ConfirmModal
         open={openModal}
         title="Delete Project"
-        message="Are you sure you want to delete this project?"
+        message="Are you sure you want to delete this project? This action cannot be undone."
         onCancel={() => {
+          if (deleteLoading) return;
+
           setOpenModal(false);
           setSelectedProject(null);
         }}
         onConfirm={handleDelete}
+        loading={deleteLoading}
       />
     </Card>
   );
