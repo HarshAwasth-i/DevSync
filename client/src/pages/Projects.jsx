@@ -1,13 +1,28 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import api from "../services/api";
 
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Badge from "../components/ui/Badge";
+import PageHeader from "../components/ui/PageHeader";
+import SearchBar from "../components/ui/SearchBar";
+import Table from "../components/ui/Table";
+import Loader from "../components/ui/Loader";
+import EmptyState from "../components/ui/EmptyState";
+import ConfirmModal from "../components/ui/ConfirmModal";
+
 export default function Projects() {
+  const navigate = useNavigate();
+
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     fetchProjects();
@@ -33,177 +48,118 @@ export default function Projects() {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
-
-    if (!confirmDelete) return;
+  const handleDelete = async () => {
+    if (!selectedProject) return;
 
     try {
-      await api.delete(`/projects/${id}`);
+      await api.delete(`/projects/${selectedProject}`);
 
       const updatedProjects = projects.filter(
-        (project) => project.id !== id
+        (project) => project.id !== selectedProject
       );
 
       setProjects(updatedProjects);
       setFilteredProjects(updatedProjects);
 
-      alert("Project deleted successfully!");
+      setOpenModal(false);
+      setSelectedProject(null);
     } catch (err) {
       console.error(err);
       alert("Failed to delete project");
     }
   };
 
-  if (loading) {
-    return (
-      <h2 className="text-2xl font-semibold">
-        Loading Projects...
-      </h2>
-    );
-  }
+  if (loading) return <Loader />;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">
-            Projects
-          </h1>
-
-          <p className="text-gray-500">
-            Manage all your projects
-          </p>
-        </div>
-
-        <Link
-          to="/projects/create"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg transition"
-        >
-          + New Project
-        </Link>
-      </div>
-
-      <input
-        type="text"
-        placeholder="🔍 Search Projects..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full border rounded-lg p-3 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <Card>
+      <PageHeader
+        title="Projects"
+        subtitle="Manage all your projects"
+        action={
+          <Button onClick={() => navigate("/projects/create")}>
+            + New Project
+          </Button>
+        }
       />
 
-      <div className="overflow-x-auto">
+      <SearchBar
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="🔍 Search Projects..."
+      />
 
-        <table className="w-full border-collapse">
+      <Table
+        columns={[
+          "Project",
+          "Status",
+          "Created By",
+          "Created At",
+          "Actions",
+        ]}
+      >
+        {filteredProjects.length === 0 ? (
+          <tr>
+            <td colSpan="5">
+              <EmptyState message="No Projects Found" />
+            </td>
+          </tr>
+        ) : (
+          filteredProjects.map((project) => (
+            <tr
+              key={project.id}
+              className="border-b hover:bg-slate-50 transition"
+            >
+              <td className="p-4 font-medium">{project.name}</td>
 
-          <thead>
+              <td className="p-4">
+                <Badge
+                  text={project.status}
+                  type={project.status.toLowerCase()}
+                />
+              </td>
 
-            <tr className="bg-gray-100">
+              <td className="p-4">{project.createdBy}</td>
 
-              <th className="text-left p-4">Project</th>
+              <td className="p-4">
+                {new Date(project.created_at).toLocaleDateString()}
+              </td>
 
-              <th className="text-left p-4">Status</th>
+              <td className="p-4">
+                <div className="flex justify-center gap-5">
+                  <Link
+                    to={`/projects/edit/${project.id}`}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <FaEdit size={18} />
+                  </Link>
 
-              <th className="text-left p-4">Created By</th>
-
-              <th className="text-left p-4">Created At</th>
-
-              <th className="text-center p-4">Actions</th>
-
+                  <button
+                    onClick={() => {
+                      setSelectedProject(project.id);
+                      setOpenModal(true);
+                    }}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    <FaTrash size={18} />
+                  </button>
+                </div>
+              </td>
             </tr>
+          ))
+        )}
+      </Table>
 
-          </thead>
-
-          <tbody>
-
-            {filteredProjects.length === 0 ? (
-              <tr>
-
-                <td
-                  colSpan="5"
-                  className="text-center py-10 text-gray-500"
-                >
-                  No Projects Found
-                </td>
-
-              </tr>
-            ) : (
-              filteredProjects.map((project) => (
-
-                <tr
-                  key={project.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-
-                  <td className="p-4 font-medium">
-                    {project.name}
-                  </td>
-
-                  <td className="p-4">
-
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold
-                        ${
-                          project.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : project.status === "Completed"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                    >
-                      {project.status}
-                    </span>
-
-                  </td>
-
-                  <td className="p-4">
-                    {project.createdBy}
-                  </td>
-
-                  <td className="p-4">
-                    {new Date(
-                      project.created_at
-                    ).toLocaleDateString()}
-                  </td>
-
-                  <td className="p-4">
-
-                    <div className="flex justify-center gap-5">
-
-                    <Link
-  to={`/projects/edit/${project.id}`}
-  className="text-blue-600 hover:text-blue-800"
->
-  <FaEdit size={18} />
-</Link>
-
-                      <button
-                        onClick={() =>
-                          handleDelete(project.id)
-                        }
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <FaTrash size={18} />
-                      </button>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              ))
-            )}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
+      <ConfirmModal
+        open={openModal}
+        title="Delete Project"
+        message="Are you sure you want to delete this project?"
+        onCancel={() => {
+          setOpenModal(false);
+          setSelectedProject(null);
+        }}
+        onConfirm={handleDelete}
+      />
+    </Card>
   );
 }

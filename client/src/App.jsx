@@ -16,6 +16,11 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import CreateProject from "./pages/CreateProject";
 
 import EditProject from "./pages/EditProject";
+import CreateTask from "./pages/CreateTask";
+
+import EditTask from "./pages/EditTask";
+
+import Kanban from "./pages/Kanban";
 
 function App() {
   return (
@@ -56,6 +61,39 @@ function App() {
   }
 >
   <Route index element={<Dashboard />} />
+</Route>
+
+<Route
+  path="/kanban"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<Kanban />} />
+</Route>
+
+<Route
+  path="/tasks/edit/:id"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<EditTask />} />
+</Route>
+
+<Route
+  path="/tasks/create"
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<CreateTask />} />
 </Route>
 
 <Route

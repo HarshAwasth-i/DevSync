@@ -146,3 +146,22 @@ export const login = (req, res) => {
     }
   );
 };
+
+// =======================
+// Get All Users
+// =======================
+export const getUsers = (req, res) => {
+  const sql = `
+    SELECT id, name, email
+    FROM users
+    ORDER BY name
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+
+    res.status(200).json(result);
+  });
+};
