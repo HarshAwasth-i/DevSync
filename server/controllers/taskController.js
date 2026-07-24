@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import logActivity from "../utils/logActivity.js";
 
 // =======================
 // Create Task
@@ -36,6 +37,13 @@ export const createTask = (req, res) => {
         console.error(err);
         return res.status(500).json(err);
       }
+
+      // Activity Log
+      logActivity(
+        "task",
+        `Created task "${title}"`,
+        assigned_to || null
+      );
 
       res.status(201).json({
         success: true,
@@ -85,26 +93,24 @@ export const getTasks = (req, res) => {
 export const getTaskById = (req, res) => {
   const { id } = req.params;
 
-  const sql = `
-    SELECT *
-    FROM tasks
-    WHERE id = ?
-  `;
+  db.query(
+    "SELECT * FROM tasks WHERE id = ?",
+    [id],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json(err);
+      }
 
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json(err);
+      if (result.length === 0) {
+        return res.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      res.status(200).json(result[0]);
     }
-
-    if (result.length === 0) {
-      return res.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    res.status(200).json(result[0]);
-  });
+  );
 };
 
 // =======================
@@ -160,6 +166,13 @@ export const updateTask = (req, res) => {
         });
       }
 
+      // Activity Log
+      logActivity(
+        "task",
+        `Updated task "${title}"`,
+        assigned_to || null
+      );
+
       res.status(200).json({
         success: true,
         message: "Task updated successfully",
@@ -175,31 +188,50 @@ export const updateTaskStatus = (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  const sql = `
-    UPDATE tasks
-    SET status = ?
-    WHERE id = ?
-  `;
+  db.query(
+    "SELECT title, assigned_to FROM tasks WHERE id = ?",
+    [id],
+    (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          message: "Server Error",
+        });
+      }
 
-  db.query(sql, [status, id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({
-        message: "Server Error",
-      });
+      if (rows.length === 0) {
+        return res.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      const task = rows[0];
+
+      db.query(
+        "UPDATE tasks SET status = ? WHERE id = ?",
+        [status, id],
+        (err, result) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({
+              message: "Server Error",
+            });
+          }
+
+          logActivity(
+            "task",
+            `Marked "${task.title}" as ${status}`,
+            task.assigned_to || null
+          );
+
+          res.status(200).json({
+            success: true,
+            message: "Task status updated successfully",
+          });
+        }
+      );
     }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Task status updated successfully",
-    });
-  });
+  );
 };
 
 // =======================
@@ -208,26 +240,44 @@ export const updateTaskStatus = (req, res) => {
 export const deleteTask = (req, res) => {
   const { id } = req.params;
 
-  const sql = `
-    DELETE FROM tasks
-    WHERE id = ?
-  `;
+  db.query(
+    "SELECT title, assigned_to FROM tasks WHERE id = ?",
+    [id],
+    (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json(err);
+      }
 
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json(err);
+      if (rows.length === 0) {
+        return res.status(404).json({
+          message: "Task not found",
+        });
+      }
+
+      const task = rows[0];
+
+      db.query(
+        "DELETE FROM tasks WHERE id = ?",
+        [id],
+        (err, result) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json(err);
+          }
+
+          logActivity(
+            "task",
+            `Deleted task "${task.title}"`,
+            task.assigned_to || null
+          );
+
+          res.status(200).json({
+            success: true,
+            message: "Task deleted successfully",
+          });
+        }
+      );
     }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        message: "Task not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Task deleted successfully",
-    });
-  });
+  );
 };

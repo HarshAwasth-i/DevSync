@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import logActivity from "../utils/logActivity.js";
 
 // =======================
 // Create Project
@@ -15,6 +16,13 @@ export const createProject = (req, res) => {
     if (err) {
       return res.status(500).json(err);
     }
+
+    // Log activity
+    logActivity(
+      "project",
+      `Created project "${name}"`,
+      created_by
+    );
 
     res.status(201).json({
       success: true,
@@ -83,7 +91,7 @@ export const getProjectById = (req, res) => {
 // =======================
 export const updateProject = (req, res) => {
   const { id } = req.params;
-  const { name, description, status } = req.body;
+  const { name, description, status, created_by } = req.body;
 
   const sql = `
     UPDATE projects
@@ -105,6 +113,13 @@ export const updateProject = (req, res) => {
       });
     }
 
+    // Log activity
+    logActivity(
+      "project",
+      `Updated project "${name}"`,
+      created_by
+    );
+
     res.status(200).json({
       success: true,
       message: "Project updated successfully",
@@ -117,26 +132,46 @@ export const updateProject = (req, res) => {
 // =======================
 export const deleteProject = (req, res) => {
   const { id } = req.params;
+  const { created_by } = req.body;
 
-  const sql = `
-    DELETE FROM projects
-    WHERE id = ?
-  `;
+  // Get project name first
+  db.query(
+    "SELECT name FROM projects WHERE id = ?",
+    [id],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json(err);
+      }
 
-  db.query(sql, [id], (err, result) => {
-    if (err) {
-      return res.status(500).json(err);
+      if (rows.length === 0) {
+        return res.status(404).json({
+          message: "Project not found",
+        });
+      }
+
+      const projectName = rows[0].name;
+
+      db.query(
+        "DELETE FROM projects WHERE id = ?",
+        [id],
+        (err, result) => {
+          if (err) {
+            return res.status(500).json(err);
+          }
+
+          // Log activity
+          logActivity(
+            "project",
+            `Deleted project "${projectName}"`,
+            created_by
+          );
+
+          res.status(200).json({
+            success: true,
+            message: "Project deleted successfully",
+          });
+        }
+      );
     }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        message: "Project not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Project deleted successfully",
-    });
-  });
+  );
 };

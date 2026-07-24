@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import logActivity from "../utils/logActivity.js";
 
 // =======================
 // Create Team Member
@@ -15,6 +16,13 @@ export const createTeam = (req, res) => {
     if (err) {
       return res.status(500).json(err);
     }
+
+    // Activity Log
+    logActivity(
+      "team",
+      `Added ${name} to the team`,
+      created_by
+    );
 
     res.status(201).json({
       success: true,
@@ -82,7 +90,7 @@ export const getTeamById = (req, res) => {
 // =======================
 export const updateTeam = (req, res) => {
   const { id } = req.params;
-  const { name, email, role } = req.body;
+  const { name, email, role, created_by } = req.body;
 
   const sql = `
     UPDATE teams
@@ -104,6 +112,13 @@ export const updateTeam = (req, res) => {
       });
     }
 
+    // Activity Log
+    logActivity(
+      "team",
+      `Updated ${name}'s profile`,
+      created_by
+    );
+
     res.status(200).json({
       success: true,
       message: "Team member updated successfully",
@@ -116,25 +131,46 @@ export const updateTeam = (req, res) => {
 // =======================
 export const deleteTeam = (req, res) => {
   const { id } = req.params;
+  const { created_by } = req.body;
 
+  // Get member name first
   db.query(
-    "DELETE FROM teams WHERE id = ?",
+    "SELECT name FROM teams WHERE id = ?",
     [id],
-    (err, result) => {
+    (err, rows) => {
       if (err) {
         return res.status(500).json(err);
       }
 
-      if (result.affectedRows === 0) {
+      if (rows.length === 0) {
         return res.status(404).json({
           message: "Team member not found",
         });
       }
 
-      res.status(200).json({
-        success: true,
-        message: "Team member deleted successfully",
-      });
+      const memberName = rows[0].name;
+
+      db.query(
+        "DELETE FROM teams WHERE id = ?",
+        [id],
+        (err, result) => {
+          if (err) {
+            return res.status(500).json(err);
+          }
+
+          // Activity Log
+          logActivity(
+            "team",
+            `Removed ${memberName} from the team`,
+            created_by
+          );
+
+          res.status(200).json({
+            success: true,
+            message: "Team member deleted successfully",
+          });
+        }
+      );
     }
   );
 };
