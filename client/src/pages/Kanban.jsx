@@ -1,18 +1,31 @@
-import { useEffect, useState } from "react";
-import { DndContext } from "@dnd-kit/core";
-import api from "../services/api";
+import { useEffect, useMemo, useState } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+} from "@dnd-kit/core";
 
+import api from "../services/api";
+import KanbanColumn from "../components/kanban/KanbanColumn";
+import TaskCard from "../components/kanban/TaskCard";
 import PageHeader from "../components/ui/PageHeader";
 import Loader from "../components/ui/Loader";
-import KanbanColumn from "../components/kanban/KanbanColumn";
 
 export default function Kanban() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTask, setActiveTask] = useState(null);
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
 
   const fetchTasks = async () => {
     try {
@@ -25,76 +38,110 @@ export default function Kanban() {
     }
   };
 
-  const handleDragEnd = async (event) => {
-    const { active, over } = event;
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const groupedTasks = useMemo(
+    () => ({
+      Pending: tasks.filter((t) => t.status === "Pending"),
+      "In Progress": tasks.filter(
+        (t) => t.status === "In Progress"
+      ),
+      Completed: tasks.filter(
+        (t) => t.status === "Completed"
+      ),
+    }),
+    [tasks]
+  );
+
+  const handleDragStart = (event) => {
+    const task = tasks.find(
+      (t) => String(t.id) === String(event.active.id)
+    );
+
+    setActiveTask(task);
+  };
+
+  const handleDragEnd = async ({ active, over }) => {
+    setActiveTask(null);
 
     if (!over) return;
 
-    const taskId = active.id;
+    const taskId = String(active.id);
     const newStatus = over.id;
 
-    // Do nothing if dropped in the same column
-    const draggedTask = tasks.find((task) => task.id === taskId);
+    const draggedTask = tasks.find(
+      (t) => String(t.id) === taskId
+    );
 
-    if (!draggedTask || draggedTask.status === newStatus) return;
+    if (!draggedTask) return;
+
+    if (draggedTask.status === newStatus) return;
+
+    const oldTasks = [...tasks];
+
+    const updated = tasks.map((task) =>
+      String(task.id) === taskId
+        ? { ...task, status: newStatus }
+        : task
+    );
+
+    setTasks(updated);
 
     try {
       await api.patch(`/tasks/${taskId}/status`, {
         status: newStatus,
       });
-
-      // Refresh tasks after update
-      fetchTasks();
     } catch (err) {
       console.error(err);
+      setTasks(oldTasks);
     }
   };
 
   if (loading) return <Loader />;
 
-  const todo = tasks.filter(
-    (task) => task.status === "Pending"
-  );
-
-  const inProgress = tasks.filter(
-    (task) => task.status === "In Progress"
-  );
-
-  const completed = tasks.filter(
-    (task) => task.status === "Completed"
-  );
-
   return (
-    <>
+    <div className="space-y-6">
       <PageHeader
         title="Kanban Board"
-        subtitle="Drag and drop tasks to update their status"
+        subtitle="Manage your tasks with drag and drop"
       />
 
-      <DndContext onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <KanbanColumn
             id="Pending"
             title="Todo"
-            icon="📋"
-            tasks={todo}
+            tasks={groupedTasks.Pending}
           />
 
           <KanbanColumn
             id="In Progress"
             title="In Progress"
-            icon="🚀"
-            tasks={inProgress}
+            tasks={groupedTasks["In Progress"]}
           />
 
           <KanbanColumn
             id="Completed"
             title="Completed"
-            icon="✅"
-            tasks={completed}
+            tasks={groupedTasks.Completed}
           />
         </div>
+
+        <DragOverlay>
+          {activeTask ? (
+            <div className="rotate-2 scale-105 opacity-90">
+              <TaskCard task={activeTask} />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
-    </>
+    </div>
   );
 }
