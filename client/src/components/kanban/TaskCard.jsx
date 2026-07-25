@@ -46,27 +46,47 @@ export default function TaskCard({ task }) {
       {...attributes}
       {...listeners}
       className="
-        bg-white
-        rounded-xl
-        border
-        border-gray-200
-        shadow-sm
-        p-4
-        mb-3
-        cursor-grab
-        active:cursor-grabbing
-        hover:shadow-lg
-        hover:-translate-y-1
-        transition-all
-        duration-200
-        select-none
-      "
+bg-white
+dark:bg-slate-800
+
+border
+border-slate-200
+dark:border-slate-700
+
+rounded-xl
+
+shadow-sm
+
+p-4
+mb-3
+
+cursor-grab
+active:cursor-grabbing
+
+hover:shadow-lg
+
+transition
+"
     >
-      <h3 className="font-semibold text-gray-800">
+      <h3
+className="
+font-semibold
+text-slate-800
+dark:text-white
+"
+>
         {task.title}
       </h3>
 
-      <div className="mt-3 space-y-2 text-sm text-gray-500">
+      <div
+className="
+mt-3
+space-y-2
+text-sm
+text-slate-500
+dark:text-slate-300
+"
+>
         <div className="flex items-center gap-2">
           <FaFolderOpen />
           {task.projectName}

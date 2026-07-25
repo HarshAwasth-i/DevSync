@@ -11,126 +11,303 @@ import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 import Teams from "./pages/Teams";
 
-import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./routes/ProtectedRoute";
 import CreateProject from "./pages/CreateProject";
-
 import EditProject from "./pages/EditProject";
-import CreateTask from "./pages/CreateTask";
+import ProjectDetails from "./pages/ProjectDetails";
 
+import CreateTask from "./pages/CreateTask";
 import EditTask from "./pages/EditTask";
+import TaskDetails from "./pages/TaskDetails";
 
 import Kanban from "./pages/Kanban";
 
+import NotFound from "./pages/NotFound";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+
+
 function App() {
+
   return (
+
     <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+
+
+      {/* Public Routes */}
+
+      <Route
+        path="/"
+        element={<Home />}
+      />
+
+
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+
+      <Route
+        path="/register"
+        element={<Register />}
+      />
+
+
+
+
+
+      {/* Dashboard */}
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
 
         <Route
-  path="/projects/create"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<CreateProject />} />
-</Route>
+          index
+          element={<Dashboard />}
+        />
 
-<Route
-  path="/projects/edit/:id"
-  element={
-    <ProtectedRoute>
-      <EditProject />
-    </ProtectedRoute>
-  }
-/>
+      </Route>
 
-        {/* Protected Layout (authentication will be added later) */}
+
+
+
+
+
+      {/* Projects */}
+
       <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Dashboard />} />
-</Route>
+        path="/projects"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
 
-<Route
-  path="/kanban"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Kanban />} />
-</Route>
+        <Route
+          index
+          element={<Projects />}
+        />
 
-<Route
-  path="/tasks/edit/:id"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<EditTask />} />
-</Route>
+      </Route>
 
-<Route
-  path="/tasks/create"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<CreateTask />} />
-</Route>
 
-<Route
-  path="/projects"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Projects />} />
-</Route>
 
-<Route
-  path="/tasks"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Tasks />} />
-</Route>
 
-<Route
-  path="/teams"
-  element={
-    <ProtectedRoute>
-      <MainLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Teams />} />
-</Route>
+      <Route
+        path="/projects/create"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+        <Route
+          index
+          element={<CreateProject />}
+        />
+
+      </Route>
+
+
+
+
+
+      <Route
+        path="/projects/edit/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<EditProject />}
+        />
+
+      </Route>
+
+
+
+
+
+      <Route
+        path="/projects/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<ProjectDetails />}
+        />
+
+      </Route>
+
+
+
+
+
+
+
+
+      {/* Tasks */}
+
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<Tasks />}
+        />
+
+      </Route>
+
+
+
+
+
+      <Route
+        path="/tasks/create"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<CreateTask />}
+        />
+
+      </Route>
+
+
+
+
+
+      <Route
+        path="/tasks/edit/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<EditTask />}
+        />
+
+      </Route>
+
+
+
+
+
+      <Route
+        path="/tasks/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<TaskDetails />}
+        />
+
+      </Route>
+
+
+
+
+
+
+
+
+      {/* Kanban */}
+
+      <Route
+        path="/kanban"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<Kanban />}
+        />
+
+      </Route>
+
+
+
+
+
+
+
+      {/* Teams */}
+
+      <Route
+        path="/teams"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+
+        <Route
+          index
+          element={<Teams />}
+        />
+
+      </Route>
+
+
+
+
+
+
+      {/* 404 */}
+
+      <Route
+        path="*"
+        element={<NotFound />}
+      />
+
+
+    </Routes>
+
   );
+
 }
+
 
 export default App;

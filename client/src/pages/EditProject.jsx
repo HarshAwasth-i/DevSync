@@ -45,6 +45,7 @@ export default function EditProject() {
 
       alert("Project updated successfully!");
       navigate("/projects");
+
     } catch (err) {
       console.error(err);
       alert("Failed to update project");
@@ -52,13 +53,49 @@ export default function EditProject() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow rounded-xl p-6">
-      <h1 className="text-3xl font-bold mb-6">Edit Project</h1>
+    <div
+      className="
+        max-w-2xl
+        mx-auto
+        bg-white
+        dark:bg-slate-900
+        border
+        border-slate-200
+        dark:border-slate-700
+        shadow-lg
+        rounded-2xl
+        p-6
+        transition-colors
+        duration-300
+      "
+    >
+
+      <h1
+        className="
+          text-3xl
+          font-bold
+          mb-6
+          text-slate-800
+          dark:text-white
+        "
+      >
+        Edit Project
+      </h1>
+
 
       <form onSubmit={handleSubmit} className="space-y-5">
 
+
         <div>
-          <label className="block mb-2 font-semibold">
+          <label
+            className="
+              block
+              mb-2
+              font-semibold
+              text-slate-700
+              dark:text-slate-200
+            "
+          >
             Project Name
           </label>
 
@@ -67,13 +104,38 @@ export default function EditProject() {
             name="name"
             value={project.name}
             onChange={handleChange}
-            className="w-full border rounded-lg p-3"
+            className="
+              w-full
+              border
+              border-slate-300
+              dark:border-slate-700
+              bg-white
+              dark:bg-slate-800
+              text-slate-800
+              dark:text-white
+              rounded-xl
+              p-3
+              outline-none
+              focus:ring-4
+              focus:ring-blue-100
+              dark:focus:ring-blue-900
+            "
             required
           />
         </div>
 
+
+
         <div>
-          <label className="block mb-2 font-semibold">
+          <label
+            className="
+              block
+              mb-2
+              font-semibold
+              text-slate-700
+              dark:text-slate-200
+            "
+          >
             Description
           </label>
 
@@ -82,12 +144,37 @@ export default function EditProject() {
             rows="5"
             value={project.description}
             onChange={handleChange}
-            className="w-full border rounded-lg p-3"
+            className="
+              w-full
+              border
+              border-slate-300
+              dark:border-slate-700
+              bg-white
+              dark:bg-slate-800
+              text-slate-800
+              dark:text-white
+              rounded-xl
+              p-3
+              outline-none
+              focus:ring-4
+              focus:ring-blue-100
+              dark:focus:ring-blue-900
+            "
           />
         </div>
 
+
+
         <div>
-          <label className="block mb-2 font-semibold">
+          <label
+            className="
+              block
+              mb-2
+              font-semibold
+              text-slate-700
+              dark:text-slate-200
+            "
+          >
             Status
           </label>
 
@@ -95,7 +182,22 @@ export default function EditProject() {
             name="status"
             value={project.status}
             onChange={handleChange}
-            className="w-full border rounded-lg p-3"
+            className="
+              w-full
+              border
+              border-slate-300
+              dark:border-slate-700
+              bg-white
+              dark:bg-slate-800
+              text-slate-800
+              dark:text-white
+              rounded-xl
+              p-3
+              outline-none
+              focus:ring-4
+              focus:ring-blue-100
+              dark:focus:ring-blue-900
+            "
           >
             <option>Active</option>
             <option>Pending</option>
@@ -103,14 +205,30 @@ export default function EditProject() {
           </select>
         </div>
 
+
+
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
+          className="
+            bg-blue-600
+            hover:bg-blue-700
+            text-white
+            px-6
+            py-3
+            rounded-xl
+            font-semibold
+            transition-all
+            duration-300
+            shadow-md
+            hover:shadow-lg
+          "
         >
           Update Project
         </button>
 
+
       </form>
+
     </div>
   );
 }

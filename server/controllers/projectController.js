@@ -175,3 +175,57 @@ export const deleteProject = (req, res) => {
     }
   );
 };
+
+
+// =======================
+// Get Project Tasks
+// =======================
+
+export const getProjectTasks = (req,res)=>{
+
+  const {id}=req.params;
+
+
+  const sql = `
+    SELECT
+      tasks.id,
+      tasks.title,
+      tasks.priority,
+      tasks.status,
+      tasks.due_date,
+      users.name AS assignedTo
+    FROM tasks
+
+    LEFT JOIN users
+    ON tasks.assigned_to = users.id
+
+    WHERE tasks.project_id = ?
+
+    ORDER BY tasks.created_at DESC
+  `;
+
+
+
+  db.query(
+    sql,
+    [id],
+    (err,result)=>{
+
+
+      if(err){
+
+        console.error(err);
+
+        return res.status(500).json(err);
+
+      }
+
+
+      res.status(200).json(result);
+
+
+    }
+  );
+
+
+};

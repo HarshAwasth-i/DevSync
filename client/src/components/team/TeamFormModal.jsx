@@ -50,15 +50,23 @@ export default function TeamFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <Card
-        hover={false}
-        className="w-full max-w-lg animate-in fade-in zoom-in duration-200"
-      >
+ hover={false}
+ className="
+ w-full
+ max-w-lg
+ animate-in
+ fade-in
+ zoom-in
+ duration-200
+ dark:bg-slate-900
+ "
+>
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-800">
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
             {member ? "Edit Team Member" : "Add Team Member"}
           </h2>
 
-          <p className="text-slate-500 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             {member
               ? "Update the team member details."
               : "Fill in the information below to add a new team member."}

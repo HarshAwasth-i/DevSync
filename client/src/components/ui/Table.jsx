@@ -6,7 +6,6 @@ export default function Table({
     <div
       className="
         overflow-x-auto
-
         rounded-2xl
 
         border
@@ -20,11 +19,9 @@ export default function Table({
       "
     >
       <table className="w-full border-collapse">
+
         <thead
           className="
-            sticky
-            top-0
-
             bg-slate-50
             dark:bg-slate-800
 
@@ -34,6 +31,7 @@ export default function Table({
           "
         >
           <tr>
+
             {columns.map((column) => (
               <th
                 key={column}
@@ -42,7 +40,6 @@ export default function Table({
                   py-4
 
                   text-left
-
                   text-sm
                   font-semibold
                   uppercase
@@ -55,18 +52,22 @@ export default function Table({
                 {column}
               </th>
             ))}
+
           </tr>
         </thead>
 
+
         <tbody
           className="
-            divide-y
-            divide-slate-200
-            dark:divide-slate-700
+          divide-y
+          divide-slate-200
+          dark:divide-slate-700
           "
         >
           {children}
         </tbody>
+
+
       </table>
     </div>
   );

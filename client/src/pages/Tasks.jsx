@@ -121,118 +121,277 @@ export default function Tasks() {
             </td>
           </tr>
         ) : (
-          filteredTasks.map((task, index) => (
-            <tr
-              key={task.id}
-              className={`
-                border-b
-                border-slate-200
-                dark:border-slate-700
+          filteredTasks.map((task,index)=>(
 
-                transition-all
-                duration-200
 
-                hover:bg-blue-50
-                dark:hover:bg-slate-800/60
+<tr
 
-                ${
-                  index % 2 === 0
-                    ? "bg-white dark:bg-slate-900"
-                    : "bg-slate-50 dark:bg-slate-800/40"
-                }
+key={task.id}
 
-                ${
-                  task.due_date &&
-                  new Date(task.due_date) < new Date() &&
-                  task.status !== "Completed"
-                    ? "bg-red-50 dark:bg-red-900/20"
-                    : ""
-                }
-              `}
-            >
-              <td className="px-6 py-4 font-semibold text-slate-800 dark:text-white">
-                {task.title}
-              </td>
+className={`
 
-              <td className="px-6 py-4 text-slate-700 dark:text-slate-200">
-                {task.projectName}
-              </td>
+border-b
 
-              <td className="px-6 py-4">
-                <Badge
-                  text={task.priority}
-                  type={task.priority}
-                />
-              </td>
+border-slate-200
+dark:border-slate-700
 
-              <td className="px-6 py-4">
-                {task.due_date ? (
-                  <span
-                    className={
-                      new Date(task.due_date) < new Date() &&
-                      task.status !== "Completed"
-                        ? "text-red-600 dark:text-red-400 font-semibold"
-                        : "text-slate-600 dark:text-slate-300"
-                    }
-                  >
-                    {new Date(task.due_date).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                ) : (
-                  <span className="text-slate-400 dark:text-slate-500">
-                    —
-                  </span>
-                )}
-              </td>
 
-              <td className="px-6 py-4">
-                <Badge
-                  text={task.status}
-                  type={task.status}
-                />
-              </td>
+transition-all
+duration-200
 
-              <td className="px-6 py-4 text-slate-700 dark:text-slate-200">
-                {task.assignedTo || "Unassigned"}
-              </td>
 
-              <td className="px-6 py-4">
-                <div className="flex justify-center gap-5">
-                  <Link
-                    to={`/tasks/edit/${task.id}`}
-                    className="
-                      text-blue-600
-                      dark:text-blue-400
-                      hover:text-blue-800
-                      dark:hover:text-blue-300
-                      transition-colors
-                    "
-                  >
-                    <FaEdit size={18} />
-                  </Link>
+hover:bg-slate-100
+dark:hover:bg-slate-800
 
-                  <button
-                    onClick={() => {
-                      setSelectedTask(task.id);
-                      setOpenModal(true);
-                    }}
-                    className="
-                      text-red-600
-                      dark:text-red-400
-                      hover:text-red-800
-                      dark:hover:text-red-300
-                      transition-colors
-                    "
-                  >
-                    <FaTrash size={18} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))
+
+
+${
+task.due_date &&
+new Date(task.due_date)<new Date() &&
+task.status!=="Completed"
+
+?
+
+"bg-red-50 dark:bg-red-950/30"
+
+:
+
+""
+
+}
+
+`}
+
+>
+
+
+
+<td
+  className="
+    p-4
+    font-semibold
+  "
+>
+  <Link
+    to={`/tasks/${task.id}`}
+    className="
+      text-slate-800
+      dark:text-white
+      hover:text-blue-600
+      dark:hover:text-blue-400
+      hover:underline
+      transition
+    "
+  >
+    {task.title}
+  </Link>
+</td>
+
+
+
+
+<td
+
+className="
+p-4
+text-slate-700
+dark:text-slate-300
+"
+
+>
+
+{task.projectName}
+
+</td>
+
+
+
+<td className="p-4">
+
+<Badge
+
+text={task.priority}
+
+type={task.priority.toLowerCase()}
+
+/>
+
+</td>
+
+
+
+
+<td
+
+className="
+p-4
+text-slate-700
+dark:text-slate-300
+"
+
+>
+
+
+{
+task.due_date ?
+
+
+<span
+
+className={
+
+new Date(task.due_date)<new Date()
+&& task.status!=="Completed"
+
+?
+
+"text-red-500 font-semibold"
+
+:
+
+"text-slate-600 dark:text-slate-300"
+
+}
+
+>
+
+
+{
+new Date(
+task.due_date
+).toLocaleDateString(
+"en-IN",
+{
+day:"2-digit",
+month:"short",
+year:"numeric"
+}
+)
+}
+
+
+</span>
+
+
+:
+
+<span className="text-slate-400">
+—
+</span>
+
+
+}
+
+
+</td>
+
+
+
+
+
+<td className="p-4">
+
+<Badge
+
+text={task.status}
+
+type={task.status.toLowerCase()}
+
+/>
+
+</td>
+
+
+
+
+
+<td
+
+className="
+p-4
+text-slate-700
+dark:text-slate-300
+"
+
+>
+
+{task.assignedTo}
+
+</td>
+
+
+
+
+
+
+<td className="p-4">
+
+
+<div
+
+className="
+flex
+justify-center
+gap-5
+"
+
+>
+
+
+<Link
+
+to={`/tasks/edit/${task.id}`}
+
+className="
+text-blue-600
+hover:text-blue-800
+dark:hover:text-blue-400
+"
+
+>
+
+<FaEdit size={18}/>
+
+</Link>
+
+
+
+
+<button
+
+onClick={()=>{
+
+setSelectedTask(task.id);
+
+setOpenModal(true);
+
+}}
+
+className="
+text-red-600
+hover:text-red-800
+dark:hover:text-red-400
+"
+
+>
+
+<FaTrash size={18}/>
+
+</button>
+
+
+
+</div>
+
+
+</td>
+
+
+
+</tr>
+
+
+))
         )}
       </Table>
 
