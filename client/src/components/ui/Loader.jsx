@@ -4,11 +4,23 @@ export default function Loader({
 }) {
   if (type === "skeleton") {
     return (
-      <div className="animate-pulse space-y-4">
+      <div className="space-y-4 animate-pulse">
         {Array.from({ length: rows }).map((_, index) => (
           <div
             key={index}
-            className="h-14 rounded-xl bg-slate-200"
+            className="
+              h-14
+              rounded-xl
+
+              bg-slate-200
+              dark:bg-slate-800
+
+              border
+              border-slate-100
+              dark:border-slate-700
+
+              transition-colors
+            "
           />
         ))}
       </div>
@@ -17,7 +29,22 @@ export default function Loader({
 
   return (
     <div className="flex justify-center items-center py-20">
-      <div className="h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div
+        className="
+          h-12
+          w-12
+
+          rounded-full
+
+          border-[5px]
+          border-blue-500
+          border-t-transparent
+
+          animate-spin
+
+          shadow-md
+        "
+      />
     </div>
   );
 }

@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import api from "../services/api";
+import { notify } from "../utils/toast";
+
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import PageHeader from "../components/ui/PageHeader";
 
 export default function CreateTask() {
   const navigate = useNavigate();
@@ -29,6 +35,7 @@ export default function CreateTask() {
       setProjects(res.data);
     } catch (err) {
       console.error(err);
+      notify.error("Failed to load projects.");
     }
   };
 
@@ -38,6 +45,7 @@ export default function CreateTask() {
       setUsers(res.data);
     } catch (err) {
       console.error(err);
+      notify.error("Failed to load users.");
     }
   };
 
@@ -54,119 +62,173 @@ export default function CreateTask() {
     try {
       await api.post("/tasks", task);
 
-      alert("Task created successfully!");
+      notify.success("Task created successfully!");
 
       navigate("/tasks");
     } catch (err) {
       console.error(err);
-      alert("Failed to create task");
+      notify.error("Failed to create task.");
     }
   };
 
   return (
-    <div className="max-w-3xl bg-white p-6 rounded-xl shadow">
+    <Card className="max-w-4xl mx-auto">
+      <PageHeader
+        title="Create Task"
+        subtitle="Add a new task to your project"
+      />
 
-      <h1 className="text-3xl font-bold mb-6">
-        Create Task
-      </h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Title */}
+        <div>
+          <label className="block font-medium mb-2">
+            Task Title
+          </label>
 
-        <input
-          type="text"
-          name="title"
-          placeholder="Task Title"
-          value={task.title}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-          required
-        />
+          <input
+            type="text"
+            name="title"
+            placeholder="Enter task title"
+            value={task.title}
+            onChange={handleChange}
+            className="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
+        </div>
 
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={task.description}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-          rows="5"
-        />
+        {/* Description */}
+        <div>
+          <label className="block font-medium mb-2">
+            Description
+          </label>
 
-        <select
-          name="priority"
-          value={task.priority}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        >
-          <option>Low</option>
-          <option>Medium</option>
-          <option>High</option>
-        </select>
+          <textarea
+            rows="5"
+            name="description"
+            placeholder="Enter task description"
+            value={task.description}
+            onChange={handleChange}
+            className="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
 
-        <select
-          name="status"
-          value={task.status}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        >
-          <option>Pending</option>
-          <option>In Progress</option>
-          <option>Completed</option>
-        </select>
+        {/* Priority + Status */}
+        <div className="grid md:grid-cols-2 gap-5">
 
-        <input
-          type="date"
-          name="due_date"
-          value={task.due_date}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        />
+          <div>
+            <label className="block font-medium mb-2">
+              Priority
+            </label>
 
-        <select
-          name="project_id"
-          value={task.project_id}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-          required
-        >
-          <option value="">Select Project</option>
-
-          {projects.map((project) => (
-            <option
-              key={project.id}
-              value={project.id}
+            <select
+              name="priority"
+              value={task.priority}
+              onChange={handleChange}
+              className="w-full border border-slate-300 rounded-xl p-3"
             >
-              {project.name}
-            </option>
-          ))}
-        </select>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </div>
 
-        <select
-          name="assigned_to"
-          value={task.assigned_to}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-          required
-        >
-          <option value="">Assign User</option>
+          <div>
+            <label className="block font-medium mb-2">
+              Status
+            </label>
 
-          {users.map((user) => (
-            <option
-              key={user.id}
-              value={user.id}
+            <select
+              name="status"
+              value={task.status}
+              onChange={handleChange}
+              className="w-full border border-slate-300 rounded-xl p-3"
             >
-              {user.name}
-            </option>
-          ))}
-        </select>
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select>
+          </div>
 
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
-        >
-          Create Task
-        </button>
+        </div>
+
+        {/* Due Date + Project */}
+        <div className="grid md:grid-cols-2 gap-5">
+
+          <div>
+            <label className="block font-medium mb-2">
+              Due Date
+            </label>
+
+            <input
+              type="date"
+              name="due_date"
+              value={task.due_date}
+              onChange={handleChange}
+              className="w-full border border-slate-300 rounded-xl p-3"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-2">
+              Project
+            </label>
+
+            <select
+              name="project_id"
+              value={task.project_id}
+              onChange={handleChange}
+              className="w-full border border-slate-300 rounded-xl p-3"
+              required
+            >
+              <option value="">Select Project</option>
+
+              {projects.map((project) => (
+                <option
+                  key={project.id}
+                  value={project.id}
+                >
+                  {project.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+        </div>
+
+        {/* Assign User */}
+        <div>
+          <label className="block font-medium mb-2">
+            Assign User
+          </label>
+
+          <select
+            name="assigned_to"
+            value={task.assigned_to}
+            onChange={handleChange}
+            className="w-full border border-slate-300 rounded-xl p-3"
+            required
+          >
+            <option value="">Select User</option>
+
+            {users.map((user) => (
+              <option
+                key={user.id}
+                value={user.id}
+              >
+                {user.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex justify-end">
+          <Button type="submit">
+            Create Task
+          </Button>
+        </div>
 
       </form>
-
-    </div>
+    </Card>
   );
 }

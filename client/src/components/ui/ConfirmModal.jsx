@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import Button from "./Button";
+
 export default function ConfirmModal({
   open,
   title,
@@ -6,43 +9,103 @@ export default function ConfirmModal({
   onConfirm,
   loading = false,
 }) {
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && !loading) {
+        onCancel();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () =>
+      document.removeEventListener("keydown", handleKeyDown);
+  }, [open, loading, onCancel]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-2xl p-6 w-[400px] shadow-xl animate-fade-in">
-        <h2 className="text-xl font-bold mb-3">
+    <div
+      className="
+        fixed
+        inset-0
+        z-50
+
+        flex
+        items-center
+        justify-center
+
+        bg-black/50
+        backdrop-blur-sm
+
+        animate-fade-in
+      "
+      onClick={!loading ? onCancel : undefined}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="
+          w-[420px]
+          max-w-[92%]
+
+          rounded-2xl
+
+          bg-white
+          dark:bg-slate-900
+
+          border
+          border-slate-200
+          dark:border-slate-700
+
+          shadow-2xl
+
+          p-7
+        "
+      >
+        <h2
+          className="
+            text-2xl
+            font-bold
+
+            text-slate-800
+            dark:text-white
+          "
+        >
           {title}
         </h2>
 
-        <p className="text-gray-600 mb-6">
+        <p
+          className="
+            mt-3
+            mb-8
+
+            leading-relaxed
+
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
           {message}
         </p>
 
         <div className="flex justify-end gap-3">
-          <button
+          <Button
+            variant="secondary"
             onClick={onCancel}
             disabled={loading}
-            className={`px-5 py-2 rounded-xl transition ${
-              loading
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
           >
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="danger"
             onClick={onConfirm}
             disabled={loading}
-            className={`px-5 py-2 rounded-xl text-white transition ${
-              loading
-                ? "bg-red-400 cursor-not-allowed"
-                : "bg-red-600 hover:bg-red-700"
-            }`}
           >
             {loading ? "Deleting..." : "Delete"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

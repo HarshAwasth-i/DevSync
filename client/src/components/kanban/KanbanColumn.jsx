@@ -3,6 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+
 import TaskCard from "./TaskCard";
 
 export default function KanbanColumn({
@@ -23,18 +24,40 @@ export default function KanbanColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`bg-gray-50 rounded-xl border-t-4 ${
-        columnColors[id]
-      } shadow-sm p-4 min-h-[500px] transition-all ${
-        isOver ? "bg-blue-50" : ""
-      }`}
+      className={`
+        bg-gray-50
+        rounded-xl
+        border-t-4
+        ${columnColors[id]}
+        shadow-sm
+        p-4
+        min-h-[500px]
+        transition-all
+        duration-200
+        ${
+          isOver
+            ? "bg-blue-100 scale-[1.01] ring-2 ring-blue-300"
+            : ""
+        }
+      `}
     >
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-lg font-bold">
           {title}
         </h2>
 
-        <span className="bg-white rounded-full px-3 py-1 text-sm font-semibold shadow">
+        <span
+          className="
+            bg-slate-200
+            text-slate-700
+            rounded-full
+            px-3
+            py-1
+            text-sm
+            font-semibold
+            shadow-sm
+          "
+        >
           {tasks.length}
         </span>
       </div>

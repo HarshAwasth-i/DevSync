@@ -3,14 +3,54 @@ export default function Table({
   children,
 }) {
   return (
-    <div className="overflow-x-auto bg-white rounded-2xl shadow-sm border border-gray-200">
-      <table className="w-full">
-        <thead className="bg-slate-50">
+    <div
+      className="
+        overflow-x-auto
+
+        rounded-2xl
+
+        border
+        border-slate-200
+        dark:border-slate-700
+
+        bg-white
+        dark:bg-slate-900
+
+        shadow-sm
+      "
+    >
+      <table className="w-full border-collapse">
+        <thead
+          className="
+            sticky
+            top-0
+
+            bg-slate-50
+            dark:bg-slate-800
+
+            border-b
+            border-slate-200
+            dark:border-slate-700
+          "
+        >
           <tr>
             {columns.map((column) => (
               <th
                 key={column}
-                className="text-left p-4 font-semibold text-gray-700"
+                className="
+                  px-6
+                  py-4
+
+                  text-left
+
+                  text-sm
+                  font-semibold
+                  uppercase
+                  tracking-wide
+
+                  text-slate-600
+                  dark:text-slate-300
+                "
               >
                 {column}
               </th>
@@ -18,7 +58,15 @@ export default function Table({
           </tr>
         </thead>
 
-        <tbody>{children}</tbody>
+        <tbody
+          className="
+            divide-y
+            divide-slate-200
+            dark:divide-slate-700
+          "
+        >
+          {children}
+        </tbody>
       </table>
     </div>
   );

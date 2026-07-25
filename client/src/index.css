@@ -1,13 +1,41 @@
 @import "tailwindcss";
 
+/* Tell Tailwind v4 to use the .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
 }
 
+html,
+body,
+#root{
+  min-height:100%;
+}
+
 body{
   min-height:100vh;
   background:#f5f7fb;
+  color:#0f172a;
   font-family:Inter, sans-serif;
+  transition:background-color .3s,color .3s;
+}
+
+html.dark body{
+  background:#020617;
+  color:#f8fafc;
+}
+
+@keyframes fadeIn{
+  from{
+    opacity:0;
+    transform:translateY(12px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }

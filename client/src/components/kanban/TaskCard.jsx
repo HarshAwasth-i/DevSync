@@ -24,8 +24,13 @@ export default function TaskCard({ task }) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.35 : 1,
+    transition: transition || "transform 200ms ease",
+    opacity: isDragging ? 0.55 : 1,
+    zIndex: isDragging ? 1000 : "auto",
+    boxShadow: isDragging
+      ? "0 18px 40px rgba(0,0,0,0.18)"
+      : undefined,
+    cursor: isDragging ? "grabbing" : "grab",
   };
 
   const priorityColor = {
@@ -40,14 +45,28 @@ export default function TaskCard({ task }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-white rounded-xl border border-gray-200 shadow p-4 mb-3 cursor-grab active:cursor-grabbing hover:shadow-lg transition"
+      className="
+        bg-white
+        rounded-xl
+        border
+        border-gray-200
+        shadow-sm
+        p-4
+        mb-3
+        cursor-grab
+        active:cursor-grabbing
+        hover:shadow-lg
+        hover:-translate-y-1
+        transition-all
+        duration-200
+        select-none
+      "
     >
       <h3 className="font-semibold text-gray-800">
         {task.title}
       </h3>
 
       <div className="mt-3 space-y-2 text-sm text-gray-500">
-
         <div className="flex items-center gap-2">
           <FaFolderOpen />
           {task.projectName}

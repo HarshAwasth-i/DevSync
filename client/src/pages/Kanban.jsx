@@ -63,41 +63,60 @@ export default function Kanban() {
     setActiveTask(task);
   };
 
-  const handleDragEnd = async ({ active, over }) => {
-    setActiveTask(null);
+const handleDragEnd = async ({ active, over }) => {
+  setActiveTask(null);
 
-    if (!over) return;
+  if (!over) return;
 
-    const taskId = String(active.id);
-    const newStatus = over.id;
+  const taskId = String(active.id);
 
-    const draggedTask = tasks.find(
-      (t) => String(t.id) === taskId
+  let newStatus;
+
+  // Dropped directly on a column
+  if (
+    over.id === "Pending" ||
+    over.id === "In Progress" ||
+    over.id === "Completed"
+  ) {
+    newStatus = over.id;
+  } else {
+    // Dropped on another task
+    const targetTask = tasks.find(
+      (task) => String(task.id) === String(over.id)
     );
 
-    if (!draggedTask) return;
+    if (!targetTask) return;
 
-    if (draggedTask.status === newStatus) return;
+    newStatus = targetTask.status;
+  }
 
-    const oldTasks = [...tasks];
+  const draggedTask = tasks.find(
+    (task) => String(task.id) === taskId
+  );
 
-    const updated = tasks.map((task) =>
-      String(task.id) === taskId
-        ? { ...task, status: newStatus }
-        : task
-    );
+  if (!draggedTask) return;
 
-    setTasks(updated);
+  if (draggedTask.status === newStatus) return;
 
-    try {
-      await api.patch(`/tasks/${taskId}/status`, {
-        status: newStatus,
-      });
-    } catch (err) {
-      console.error(err);
-      setTasks(oldTasks);
-    }
-  };
+  const oldTasks = [...tasks];
+
+  const updated = tasks.map((task) =>
+    String(task.id) === taskId
+      ? { ...task, status: newStatus }
+      : task
+  );
+
+  setTasks(updated);
+
+  try {
+    await api.patch(`/tasks/${taskId}/status`, {
+      status: newStatus,
+    });
+  } catch (err) {
+    console.error(err);
+    setTasks(oldTasks);
+  }
+};
 
   if (loading) return <Loader />;
 
