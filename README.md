@@ -1,4 +1,4 @@
-# 🚀 DevSync
+#  DevSync
 
 <div align="center">
 
