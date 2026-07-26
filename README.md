@@ -296,7 +296,7 @@ GitHub:
 https://github.com/HarshAwasth-i
 
 LinkedIn:
-(Add your LinkedIn profile)
+(https://www.linkedin.com/in/harsh-awasthi-181761331/)
 
 ---
 
