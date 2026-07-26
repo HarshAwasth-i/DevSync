@@ -1,11 +1,8 @@
-import { useState } from "react";
-import {
-  FaBell,
-  FaCheckCircle,
-  FaFolderOpen,
-  FaUsers,
-} from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
+import { FaBell } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
+import ActivityFeed from "../dashboard/ActivityFeed";
 import useActivities from "../../hooks/useActivities";
 
 export default function NotificationDropdown() {
@@ -13,175 +10,171 @@ export default function NotificationDropdown() {
 
   const { activities } = useActivities();
 
-  const getIcon = (type) => {
-    switch (type) {
-      case "project":
-        return <FaFolderOpen className="text-blue-600" />;
+  const dropdownRef = useRef(null);
+  
 
-      case "task":
-        return <FaCheckCircle className="text-green-600" />;
-
-      case "team":
-        return <FaUsers className="text-purple-600" />;
-
-      default:
-        return <FaBell className="text-slate-500" />;
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
     }
-  };
 
-  const formatTime = (date) => {
-    const now = new Date();
-    const activityTime = new Date(date);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
 
-    const diff = Math.floor((now - activityTime) / 1000);
-
-    if (diff < 60) return "Just now";
-
-    if (diff < 3600)
-      return `${Math.floor(diff / 60)} min ago`;
-
-    if (diff < 86400)
-      return `${Math.floor(diff / 3600)} hr ago`;
-
-    if (diff < 172800) return "Yesterday";
-
-    return activityTime.toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+  }, []);
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      ref={dropdownRef}
+    >
       <button
         onClick={() => setOpen(!open)}
         className="
           relative
-          text-slate-600
-          hover:text-blue-600
-          transition-all
-          duration-200
+          w-10
+          h-10
+
+          rounded-xl
+
+          flex
+          items-center
+          justify-center
+
+          bg-slate-100
+          dark:bg-slate-800
+
+          hover:scale-105
+
+          transition
         "
       >
-        <FaBell size={22} />
+        <FaBell className="text-lg" />
 
         {activities.length > 0 && (
           <span
             className="
               absolute
-              -top-2
-              -right-2
-              bg-red-500
-              text-white
-              rounded-full
-              text-xs
-              font-semibold
+              -top-1
+              -right-1
+
+              min-w-[20px]
               h-5
-              w-5
+
+              px-1
+
+              rounded-full
+
+              bg-red-500
+
+              text-white
+              text-[10px]
+              font-bold
+
               flex
               items-center
               justify-center
-              shadow
             "
           >
-            {activities.length > 9 ? "9+" : activities.length}
+            {activities.length}
           </span>
         )}
       </button>
 
-      {open && (
+      <div
+        className={`
+          absolute
+          right-0
+          mt-3
+
+          w-[92vw] sm:w-[380px]
+
+          rounded-2xl
+
+          bg-white
+          dark:bg-slate-900
+
+          border
+          border-slate-200
+          dark:border-slate-700
+
+          shadow-2xl
+
+          z-50
+
+          transition-all
+          duration-300
+
+          ${
+            open
+              ? "opacity-100 translate-y-0 visible"
+              : "opacity-0 -translate-y-2 invisible"
+          }
+        `}
+      >
         <div
           className="
-            absolute
-            right-0
-            mt-4
-            w-96
-            bg-white
-            rounded-2xl
-            shadow-2xl
-            border
-            z-50
-            overflow-hidden
+            p-5
+
+            border-b
+            border-slate-200
+            dark:border-slate-700
           "
         >
-          <div className="p-4 border-b bg-slate-50">
-            <h2 className="text-lg font-bold text-slate-800">
-              Notifications
-            </h2>
-
-            <p className="text-sm text-slate-500">
-              Recent Activity
-            </p>
-          </div>
-
-          <div className="max-h-96 overflow-y-auto">
-            {activities.length === 0 ? (
-              <div className="p-8 text-center">
-                <FaBell className="mx-auto text-4xl text-slate-300" />
-
-                <p className="mt-4 text-slate-500">
-                  No notifications yet
-                </p>
-              </div>
-            ) : (
-              activities.slice(0, 8).map((activity) => (
-                <div
-                  key={activity.id}
-                  className="
-                    flex
-                    gap-4
-                    p-4
-                    border-b
-                    hover:bg-blue-50
-                    transition-all
-                    duration-200
-                    cursor-pointer
-                  "
-                >
-                  <div
-                    className="
-                      w-10
-                      h-10
-                      rounded-xl
-                      bg-slate-100
-                      flex
-                      items-center
-                      justify-center
-                    "
-                  >
-                    {getIcon(activity.type)}
-                  </div>
-
-                  <div className="flex-1">
-                    <p className="font-medium text-slate-700">
-                      {activity.message}
-                    </p>
-
-                    <p className="text-xs text-slate-400 mt-1">
-                      {formatTime(activity.created_at)}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="p-3 border-t bg-slate-50 text-center">
-            <button
-              className="
-                text-blue-600
-                hover:text-blue-700
-                hover:underline
-                font-medium
-                text-sm
-              "
-            >
-              View All Activities
-            </button>
-          </div>
+          <h2
+            className="
+              text-lg
+              font-bold
+              text-slate-800
+              dark:text-white
+            "
+          >
+            Notifications
+          </h2>
         </div>
-      )}
+
+        <div className="max-h-96 overflow-y-auto">
+          <ActivityFeed
+            compact
+            limit={5}
+          />
+        </div>
+
+        <Link
+          to="/activity"
+          onClick={() => setOpen(false)}
+          className="
+            block
+
+            p-4
+
+            text-center
+
+            font-semibold
+
+            text-blue-600
+
+            hover:bg-slate-50
+            dark:hover:bg-slate-800
+
+            transition
+          "
+        >
+          View All Activity →
+        </Link>
+      </div>
     </div>
   );
 }

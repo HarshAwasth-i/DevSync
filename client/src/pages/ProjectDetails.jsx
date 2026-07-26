@@ -1,421 +1,129 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import api from "../services/api";
 
-import Card from "../components/ui/Card";
-import Badge from "../components/ui/Badge";
 import Loader from "../components/ui/Loader";
-import PageHeader from "../components/ui/PageHeader";
+import Button from "../components/ui/Button";
 
+import ProjectOverview from "../components/projects/ProjectOverview";
+import ProjectStatsCards from "../components/projects/ProjectStatsCards";
+import ProjectTaskTable from "../components/projects/ProjectTaskTable";
 
 export default function ProjectDetails() {
-
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
-
-
   useEffect(() => {
-    fetchProjectDetails();
-  }, []);
+    fetchProject();
+  }, [id]);
 
-
-
-  const fetchProjectDetails = async () => {
-
+  const fetchProject = async () => {
     try {
-
-      const projectRes = await api.get(
-        `/projects/${id}`
-      );
-
-
-      const tasksRes = await api.get(
-        "/tasks"
-      );
-
+      const [projectRes, taskRes] = await Promise.all([
+        api.get(`/projects/${id}`),
+        api.get(`/projects/${id}/tasks`),
+      ]);
 
       setProject(projectRes.data);
-
-
-      const projectTasks = tasksRes.data.filter(
-        (task) =>
-          task.project_id === Number(id)
-      );
-
-
-      setTasks(projectTasks);
-
-
+      setTasks(taskRes.data);
     } catch (err) {
-
       console.error(err);
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
+  if (loading) {
+    return <Loader type="spinner" />;
+  }
 
-
-
-  if (loading)
-    return <Loader />;
-
-
-
-
-  if (!project)
+  if (!project) {
     return (
-      <p className="text-slate-500">
-        Project not found
-      </p>
+      <div className="text-center py-20">
+        <h2 className="text-3xl font-bold dark:text-white">
+          Project not found
+        </h2>
+
+        <Button
+          className="mt-6"
+          onClick={() => navigate("/projects")}
+        >
+          Back to Projects
+        </Button>
+      </div>
     );
+  }
 
-
-
-
-
-  const completedTasks = tasks.filter(
-    (task) =>
-      task.status === "Completed"
+  const completed = tasks.filter(
+    (task) => task.status === "Completed"
   ).length;
-
 
   const progress =
     tasks.length === 0
       ? 0
-      :
-      Math.round(
-        (completedTasks / tasks.length) * 100
-      );
-
-
-
-
+      : Math.round((completed / tasks.length) * 100);
 
   return (
+    <div className="space-y-8">
+      {/* Top Buttons */}
+      <div className="flex justify-between items-center">
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/projects")}
+        >
+          ← Back
+        </Button>
 
-    <div className="space-y-6">
+        <Button
+          onClick={() =>
+            navigate("/tasks/create")
+          }
+        >
+          + Add Task
+        </Button>
+      </div>
 
+      {/* Project Info */}
+      <ProjectOverview project={project} />
 
-      <PageHeader
-
-        title={project.name}
-
-        subtitle="Project details and tasks"
-
-      />
-
-
-
-
-      {/* Project Information */}
-
-      <Card>
-
-
-        <div className="
-          flex
-          justify-between
-          items-start
-          gap-5
-        ">
-
-
-          <div>
-
-            <h2 className="
-              text-2xl
-              font-bold
-              text-slate-800
-              dark:text-white
-            ">
-              {project.name}
-            </h2>
-
-
-            <p className="
-              mt-3
-              text-slate-600
-              dark:text-slate-300
-            ">
-              {
-                project.description ||
-                "No description available."
-              }
-            </p>
-
-
-          </div>
-
-
-
-          <Badge
-
-            text={project.status}
-
-            type={
-              project.status?.toLowerCase()
-            }
-
-          />
-
-
-        </div>
-
-
-
-
-
-        <div className="
-          mt-8
-          grid
-          md:grid-cols-3
-          gap-6
-        ">
-
-
-          <InfoItem
-            label="Created By"
-            value={project.createdBy}
-          />
-
-
-          <InfoItem
-            label="Created At"
-            value={
-              new Date(
-                project.created_at
-              ).toLocaleDateString()
-            }
-          />
-
-
-          <InfoItem
-            label="Total Tasks"
-            value={tasks.length}
-          />
-
-
-        </div>
-
-
-
-      </Card>
-
-
-
-
+      {/* Statistics */}
+      <ProjectStatsCards tasks={tasks} />
 
       {/* Progress */}
-
-      <Card>
-
-
-        <div className="flex justify-between mb-3">
-
-          <h2 className="text-xl font-bold">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow p-6 transition-colors">
+        <div className="flex justify-between mb-4">
+          <h2 className="text-xl font-bold dark:text-white">
             Project Progress
           </h2>
 
-
-          <span className="font-semibold">
+          <span className="font-bold text-blue-600">
             {progress}%
           </span>
-
-
         </div>
 
-
-
-        <div className="
-          h-3
-          bg-slate-200
-          rounded-full
-          overflow-hidden
-        ">
-
+        <div className="w-full h-4 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
           <div
-
-            className="
-              h-full
-              bg-blue-600
-              transition-all
-            "
-
+            className="h-full bg-blue-600 transition-all duration-700"
             style={{
-              width:`${progress}%`
+              width: `${progress}%`,
             }}
-
           />
-
         </div>
-
-
-      </Card>
-
-
-
-
+      </div>
 
       {/* Tasks */}
-
-      <Card>
-
-
-        <h2 className="
-          text-xl
-          font-bold
-          mb-5
-        ">
+      <div>
+        <h2 className="text-2xl font-bold mb-5 dark:text-white">
           Project Tasks
         </h2>
 
-
-
-
-        {
-          tasks.length === 0 ?
-
-          (
-
-            <p className="text-slate-500">
-              No tasks available.
-            </p>
-
-          )
-
-          :
-
-          (
-
-          <div className="space-y-4">
-
-            {
-              tasks.map((task)=>(
-
-                <div
-
-                  key={task.id}
-
-                  className="
-                    flex
-                    justify-between
-                    items-center
-                    border-b
-                    pb-3
-                  "
-
-                >
-
-
-                  <div>
-
-                    <Link
-
-                      to={`/tasks/${task.id}`}
-
-                      className="
-                        font-semibold
-                        text-blue-600
-                        hover:underline
-                      "
-
-                    >
-
-                      {task.title}
-
-                    </Link>
-
-
-                    <p className="
-                      text-sm
-                      text-slate-500
-                    ">
-                      {task.assignedTo}
-                    </p>
-
-
-                  </div>
-
-
-
-                  <Badge
-
-                    text={task.status}
-
-                    type={
-                      task.status.toLowerCase()
-                    }
-
-                  />
-
-
-                </div>
-
-              ))
-            }
-
-
-          </div>
-
-          )
-
-        }
-
-
-      </Card>
-
-
+        <ProjectTaskTable tasks={tasks} />
+      </div>
     </div>
-
   );
-
-}
-
-
-
-
-
-function InfoItem({
-  label,
-  value
-}) {
-
-  return (
-
-    <div>
-
-      <p className="
-        text-sm
-        text-slate-500
-        dark:text-slate-400
-      ">
-        {label}
-      </p>
-
-
-      <p className="
-        font-semibold
-        mt-1
-        text-slate-800
-        dark:text-white
-      ">
-        {value || "N/A"}
-      </p>
-
-
-    </div>
-
-  );
-
 }

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import Breadcrumbs from "../ui/Breadcrumbs";
 
 
 export default function MainLayout() {
@@ -135,6 +136,7 @@ export default function MainLayout() {
           "
 
         >
+          <Breadcrumbs />
 
           <Outlet />
 

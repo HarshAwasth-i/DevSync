@@ -10,14 +10,19 @@ export default function Card({
     <div
       className={clsx(
         `
-          bg-white
-          dark:bg-slate-900
+          relative
+          overflow-hidden
+
+          rounded-2xl
+
+          bg-white/90
+          dark:bg-slate-900/90
+
+          backdrop-blur-sm
 
           border
           border-slate-200
           dark:border-slate-700
-
-          rounded-2xl
 
           shadow-sm
           dark:shadow-black/20
@@ -27,10 +32,11 @@ export default function Card({
         `,
         hover &&
           `
-          hover:-translate-y-1
-          hover:shadow-xl
-          dark:hover:shadow-black/40
-        `,
+            hover:-translate-y-1
+            hover:shadow-2xl
+            hover:border-blue-200
+            dark:hover:border-slate-600
+          `,
         padding,
         className
       )}
