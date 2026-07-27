@@ -131,28 +131,6 @@ The application follows a full-stack architecture using React for the frontend, 
 
 ---
 
-# 📸 Screenshots
-
-## Landing Page
-
-> Add image here
-
-```
-screenshots/landing-page.png
-```
-
----
-
-## Dashboard
-
-> Add image here
-
-```
-screenshots/dashboard.png
-```
-
----
-
 ## Projects
 # 📸 Application Screenshots
 
