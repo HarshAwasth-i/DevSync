@@ -154,34 +154,45 @@ screenshots/dashboard.png
 ---
 
 ## Projects
+# 📸 Application Screenshots
 
-> Add image here
+## 🏠 Landing Page
 
-```
-screenshots/projects.png
-```
-
----
-
-## Kanban Board
-
-> Add image here
-
-```
-screenshots/kanban.png
-```
+<p align="center">
+  <img src="screenshots/landing-page.png" width="900"/>
+</p>
 
 ---
 
-## Login
+## 🔐 Login
 
-> Add image here
-
-```
-screenshots/login.png
-```
+<p align="center">
+  <img src="screenshots/login.png" width="900"/>
+</p>
 
 ---
+
+## 📊 Dashboard
+
+<p align="center">
+  <img src="screenshots/dashboard.png" width="900"/>
+</p>
+
+---
+
+## 📁 Projects
+
+<p align="center">
+  <img src="screenshots/projects.png" width="900"/>
+</p>
+
+---
+
+## 📋 Kanban Board
+
+<p align="center">
+  <img src="screenshots/kanban.png" width="900"/>
+</p>
 
 # 📂 Project Structure
 
