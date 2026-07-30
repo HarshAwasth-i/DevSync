@@ -289,13 +289,6 @@ LinkedIn:
 
 ---
 
-# ⭐ Support
-
-If you found this project helpful, consider giving it a ⭐ on GitHub.
-
-It helps the project reach more developers.
-
----
 
 <div align="center">
 
